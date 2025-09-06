@@ -86,6 +86,10 @@ class SiteController extends Controller
 			Yii::app()->end();
 		}
 
+		if (!Yii::app()->user->isGuest) {
+			$this->redirect(array('site/index'));
+		}
+
 		// collect user input data
 		if(isset($_POST['LoginForm']))
 		{
@@ -96,6 +100,31 @@ class SiteController extends Controller
 		}
 		// display the login form
 		$this->render('login',array('model'=>$model));
+	}
+
+	public function actionRegister() {
+
+		if (!Yii::app()->user->isGuest && !Yii::app()->user->is_admin) {
+        	$this->redirect(array('site/index'));
+    	}
+    	$model = new Users;
+
+    	if (isset($_POST['Users'])) {
+        	$model->attributes = $_POST['Users'];
+        	// Hash the raw password (assuming form input name is 'password')
+        	$model->password_hash = password_hash($_POST['Users']['password'], PASSWORD_BCRYPT);
+
+
+        	if ($model->validate() && $model->save()) {
+
+            	Yii::app()->user->setFlash('message', 'Registration successful. You can now log in.');
+            	$this->refresh();
+        	} else {
+            	Yii::app()->user->setFlash('error', 'Registration failed. Please try again.');
+        	}
+    	}
+
+    	$this->render('register', array('model' => $model));
 	}
 
 	/**
