@@ -14,13 +14,13 @@
 
 <div class="max-w-7xl mx-auto p-4">
 
+<?php if(!Yii::app()->user->isGuest): ?>
 	<!-- Navigation -->
 	<nav class="bg-white shadow mb-6 rounded-lg">
 		<ul class="flex flex-wrap space-x-4 p-4 text-gray-700">
 			<?php $this->widget('zii.widgets.CMenu',array(
 				'items'=>array(
 					array('label'=>'Home', 'url'=>array('/site/index')),
-					array('label'=>'Login', 'url'=>array('/site/login'), 'visible'=>Yii::app()->user->isGuest),
 					array('label'=>'Logout ('.Yii::app()->user->name.')', 'url'=>array('/site/logout'), 'visible'=>!Yii::app()->user->isGuest),
 					array('label'=>'Dashboard', 'url'=>array('/site/dashboard'), 'visible'=>!Yii::app()->user->isGuest && !Yii::app()->user->is_admin == true),
 
@@ -37,6 +37,7 @@
 			)); ?>
 		</ul>
 	</nav>
+<?php endif; ?>
 
 	<!-- Breadcrumbs -->
 	<?php if(isset($this->breadcrumbs)):?>

@@ -103,34 +103,58 @@ class SiteController extends Controller
 	}
 
 	public function actionDashboard() {
-		if (Yii::app()->user->isGuest) {
-			$this->redirect(array('site/login'));
-		}
+	if (Yii::app()->user->isGuest) {
+    $this->redirect(array('site/login'));
+}
 
-		$userId = Yii::app()->user->id;
-    $user = Users::model()->with('employee')->findByPk($userId);
+$userId = Yii::app()->user->id;
+$user = Users::model()->with('employee')->findByPk($userId);
 
-    if (!$user || !$user->employee) {
-        throw new CHttpException(403, 'No employee linked to this user.');
-    }
+if (!$user || !$user->employee) {
+    throw new CHttpException(403, 'No employee linked to this user.');
+}
 
-    $employeeId = $user->employee->EmployeeID;
+$employee = $user->employee;
 
-    // Get all categories that have at least one task assigned to this employee
-    $categories = TaskCategory::model()->with(array(
-        'tasks' => array(
-            'joinType' => 'INNER JOIN',
-            'condition' => 'EXISTS (
-                SELECT 1 FROM task_employee te
-                WHERE te.task_id = tasks.id AND te.employee_id = :eid
-            )',
-            'params' => array(':eid' => $employeeId),
-        )
-    ))->findAll();
+// Load tasks relation with optional condition
+$criteria = new CDbCriteria();
+$criteria->together = true;  // join tables
+$criteria->with = array();   // no extra relations here
+$criteria->distinct = true;  // avoid duplicates
 
-    $this->render('dashboard', array(
-        'categories' => $categories,
-    ));
+// Get assigned task count
+$assignedTaskCount = count($employee->tasks);
+
+// Or, if tasks relation is lazy loaded and might be large, do count query:
+$assignedTaskCount = Task::model()->with('employees')->count(
+    'employees.EmployeeID = :eid',
+    array(':eid' => $employee->EmployeeID)
+);
+
+// Get completed task count
+$completedTaskCount = Task::model()->with('employees')->count(
+    'employees.EmployeeID = :eid AND t.status = :status',
+    array(':eid' => $employee->EmployeeID, ':status' => 'completed')
+);
+
+// Get categories assigned to employee via tasks
+$categories = TaskCategory::model()->with(array(
+    'tasks' => array(
+        'joinType' => 'INNER JOIN',
+        'condition' => 'EXISTS (
+            SELECT 1 FROM task_employee te
+            WHERE te.task_id = tasks.id AND te.employee_id = :eid
+        )',
+        'params' => array(':eid' => $employee->EmployeeID),
+    )
+))->findAll();
+
+$this->render('dashboard', array(
+    'categories' => $categories,
+    'assignedTaskCount' => $assignedTaskCount,
+    'completedTaskCount' => $completedTaskCount,
+));
+
 	}
 
 	public function actionAdminDashboard() {

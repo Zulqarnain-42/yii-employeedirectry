@@ -1,3 +1,21 @@
+<h2 class="mb-6 text-2xl font-semibold text-gray-800">Task Overview</h2>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <!-- Total Assigned Tasks Card -->
+    <div class="bg-white shadow rounded border-l-4 border-blue-500 p-6">
+        <h5 class="text-blue-600 text-lg font-semibold mb-2">Total Assigned Tasks</h5>
+        <p class="text-5xl font-bold text-gray-900"><?php echo $assignedTaskCount; ?></p>
+    </div>
+
+    <!-- Tasks Completed Card -->
+    <div class="bg-white shadow rounded border-l-4 border-red-500 p-6">
+        <h5 class="text-red-600 text-lg font-semibold mb-2">Tasks Not Completed</h5>
+        <p class="text-5xl font-bold text-gray-900"><?php echo $completedTaskCount; ?></p>
+    </div>
+</div>
+
+
+
 <h2 class="text-2xl font-semibold mb-6 text-gray-800">Your Task Categories</h2>
 
 <?php if (empty($categories)): ?>
