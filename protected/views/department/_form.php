@@ -4,37 +4,34 @@
 /* @var $form CActiveForm */
 ?>
 
-<div class="form">
+<div class="max-w-xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    <?php $form = $this->beginWidget('CActiveForm', array(
+        'id' => 'department-form',
+        'enableAjaxValidation' => false,
+        'htmlOptions' => ['class' => 'space-y-6'],
+    )); ?>
 
-<?php $form=$this->beginWidget('CActiveForm', array(
-	'id'=>'department-form',
-	// Please note: When you enable ajax validation, make sure the corresponding
-	// controller action is handling ajax validation correctly.
-	// There is a call to performAjaxValidation() commented in generated controller code.
-	// See class documentation of CActiveForm for details on this.
-	'enableAjaxValidation'=>false,
-)); ?>
+    <p class="text-gray-600 text-sm mb-4">Fields with <span class="text-red-600">*</span> are required.</p>
 
-	<p class="note">Fields with <span class="required">*</span> are required.</p>
+    <?php echo $form->errorSummary($model, '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">', '</div>'); ?>
 
-	<?php echo $form->errorSummary($model); ?>
+    <div class="flex flex-col">
+        <?php echo $form->labelEx($model, 'DepartmentName', ['class' => 'mb-1 font-semibold text-gray-700']); ?>
+        <?php echo $form->textField($model, 'DepartmentName', ['class' => 'border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500']); ?>
+        <?php echo $form->error($model, 'DepartmentName', ['class' => 'text-red-600 mt-1 text-sm']); ?>
+    </div>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'DepartmentName'); ?>
-		<?php echo $form->textField($model,'DepartmentName',array('size'=>60,'maxlength'=>100)); ?>
-		<?php echo $form->error($model,'DepartmentName'); ?>
-	</div>
+    <div class="flex flex-col">
+        <?php echo $form->labelEx($model, 'Location', ['class' => 'mb-1 font-semibold text-gray-700']); ?>
+        <?php echo $form->textField($model, 'Location', ['class' => 'border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500']); ?>
+        <?php echo $form->error($model, 'Location', ['class' => 'text-red-600 mt-1 text-sm']); ?>
+    </div>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'Location'); ?>
-		<?php echo $form->textField($model,'Location',array('size'=>60,'maxlength'=>100)); ?>
-		<?php echo $form->error($model,'Location'); ?>
-	</div>
+    <div class="flex justify-end">
+        <?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save', [
+            'class' => 'bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition font-semibold',
+        ]); ?>
+    </div>
 
-	<div class="row buttons">
-		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save'); ?>
-	</div>
-
-<?php $this->endWidget(); ?>
-
-</div><!-- form -->
+    <?php $this->endWidget(); ?>
+</div>

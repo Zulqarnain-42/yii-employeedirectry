@@ -3,23 +3,24 @@
 /* @var $data Department */
 ?>
 
-<div class="view">
+<div class="bg-white shadow-md rounded-lg p-6 mb-6 max-w-md mx-auto">
+    <div class="mb-4">
+        <span class="font-semibold text-gray-700"><?php echo CHtml::encode($data->getAttributeLabel('DepartmentName')); ?>:</span>
+        <span class="text-gray-900 ml-2"><?php echo CHtml::encode($data->DepartmentName); ?></span>
+    </div>
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('DepartmentName')); ?>:</b>
-	<?php echo CHtml::encode($data->DepartmentName); ?>
-	<br />
+    <div class="mb-4">
+        <span class="font-semibold text-gray-700"><?php echo CHtml::encode($data->getAttributeLabel('Location')); ?>:</span>
+        <span class="text-gray-900 ml-2"><?php echo CHtml::encode($data->Location); ?></span>
+    </div>
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('Location')); ?>:</b>
-	<?php echo CHtml::encode($data->Location); ?>
-	<br />
+    <div class="mb-4">
+        <span class="font-semibold text-gray-700"><?php echo CHtml::encode($data->getAttributeLabel('CreatedAt')); ?>:</span>
+        <span class="text-gray-900 ml-2"><?php echo CHtml::encode($data->CreatedAt); ?></span>
+    </div>
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('CreatedAt')); ?>:</b>
-	<?php echo CHtml::encode($data->CreatedAt); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('UpdatedAt')); ?>:</b>
-	<?php echo CHtml::encode($data->UpdatedAt); ?>
-	<br />
-
-
+    <div>
+        <span class="font-semibold text-gray-700"><?php echo CHtml::encode($data->getAttributeLabel('UpdatedAt')); ?>:</span>
+        <span class="text-gray-900 ml-2"><?php echo CHtml::encode($data->UpdatedAt); ?></span>
+    </div>
 </div>

@@ -31,11 +31,6 @@
 		<?php echo $form->textField($model,'role',array('size'=>50,'maxlength'=>50)); ?>
 	</div>
 
-	<div class="row">
-		<?php echo $form->label($model,'is_active'); ?>
-		<?php echo $form->textField($model,'is_active'); ?>
-	</div>
-
 	<div class="row buttons">
 		<?php echo CHtml::submitButton('Search'); ?>
 	</div>

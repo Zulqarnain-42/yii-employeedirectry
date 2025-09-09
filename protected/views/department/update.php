@@ -8,12 +8,6 @@ $this->breadcrumbs=array(
 	'Update',
 );
 
-$this->menu=array(
-	array('label'=>'List Department', 'url'=>array('index')),
-	array('label'=>'Create Department', 'url'=>array('create')),
-	array('label'=>'View Department', 'url'=>array('view', 'id'=>$model->DepartmentID)),
-	array('label'=>'Manage Department', 'url'=>array('admin')),
-);
 ?>
 
 <h1>Update Department <?php echo $model->DepartmentID; ?></h1>

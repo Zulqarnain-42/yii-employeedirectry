@@ -41,22 +41,28 @@ or <b>=</b>) at the beginning of each of your search values to specify how the c
 </div><!-- search-form -->
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>'users-grid',
-	'dataProvider'=>$model->search(),
-	'filter'=>$model,
-	'columns'=>array(
-		'id',
-		'username',
-		'email',
-		'full_name',
-		'role',
-		/*
-		'is_active',
-		'created_at',
-		'updated_at',
-		*/
-		array(
-			'class'=>'CButtonColumn',
-		),
-	),
+    'id'=>'users-grid',
+    'dataProvider'=>$model->search(),
+    'filter'=>$model,
+    'columns'=>array(
+        'id',
+        'username',
+        'email',
+        'full_name',
+        array(
+            'name' => 'role',
+            'value' => '($data->role) ? "admin" : "user"',  // Display admin if true, else user
+            'filter' => array(0 => 'user', 1 => 'admin'),   // optional filter dropdown
+        ),
+        /*
+        'is_active',
+        'created_at',
+        'updated_at',
+        */
+        array(
+            'class'=>'CButtonColumn',
+			'template'=>'{view} {delete}', // removed {update}
+        ),
+    ),
 )); ?>
+

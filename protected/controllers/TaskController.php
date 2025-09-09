@@ -1,6 +1,6 @@
 <?php
 
-class EmployeeController extends Controller
+class TaskController extends Controller
 {
 	/**
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
@@ -64,48 +64,39 @@ class EmployeeController extends Controller
 	 */
 	public function actionCreate()
 	{
-		$model=new Employee;
-		$departmentList = CHtml::listData(Department::model()->findAll(),
-			'DepartmentID',
-			'DepartmentName'
-		);
-		
+		$model=new Task;
+		$categoryList = CHtml::listData(TaskCategory::model()->findAll(),
+					'id',
+					'name'
+				);
+
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['Employee']))
+		if(isset($_POST['Task']))
 		{
-			$model->attributes=$_POST['Employee'];
-			$uploadedFile = CUploadedFile::getInstance($model, 'ProfileImage');
-			if ($uploadedFile !== null) {
-				$model->ProfileImage = file_get_contents($uploadedFile->tempName);
+			$model->attributes=$_POST['Task'];
+			$model->TaskCategoryID = $_POST['Task']['TaskCategoryID'];
+			if($model->save()){
+				// Handle the many-to-many relationship
+				if (!empty($model->employee_ids)) {
+					foreach ($model->employee_ids as $empId) {
+						Yii::app()->db->createCommand()
+							->insert('task_employee', [
+								'task_id' => $model->id,
+								'employee_id' => $empId,
+							]);
+					}
+				}
+				$this->redirect(array('view','id'=>$model->id));
 			}
-
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->EmployeeID));
 		}
 
 		$this->render('create',array(
 			'model'=>$model,
-			'departmentList'=>$departmentList,
+			'categoryList'=>$categoryList,
 		));
 	}
-
-	public function actionGetEmployeeData()
-	{
-		if (isset($_POST['EmployeeID'])) {
-			$employee = Employee::model()->findByPk($_POST['EmployeeID']);
-			if ($employee !== null) {
-				echo json_encode([
-					'fullName' => $employee->FirstName . ' ' . $employee->LastName,
-					'Email' => $employee->Email,
-					// Add more fields if needed
-				]);
-			}
-		}
-		Yii::app()->end();
-	}
-
 
 	/**
 	 * Updates a particular model.
@@ -115,37 +106,38 @@ class EmployeeController extends Controller
 	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id);
-		$departmentList = CHtml::listData(Department::model()->findAll(),
-			'DepartmentID',
-			'DepartmentName'
-		);
-
+		$categoryList = CHtml::listData(TaskCategory::model()->findAll(),
+					'id',
+					'name'
+				);
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['Employee']))
+		if(isset($_POST['Task']))
 		{
-			$model->attributes=$_POST['Employee'];
+			$model->attributes=$_POST['Task'];
+			$model->TaskCategoryID = $_POST['Task']['TaskCategoryID'];
 
-			// Get uploaded file
-			$uploadedFile = CUploadedFile::getInstance($model, 'ProfileImage');
-
-			if ($uploadedFile !== null) {
-				// If new image uploaded, update it
-				$model->ProfileImage = file_get_contents($uploadedFile->tempName);
-			} else {
-				// If no new image uploaded, keep the existing one
-				$existingModel = Employee::model()->findByPk($id);
-				$model->ProfileImage = $existingModel->ProfileImage;
+			if($model->save()){
+				// Update the many-to-many relationship
+				Yii::app()->db->createCommand()
+					->delete('task_employee', 'task_id=:taskId', [':taskId' => $model->id]);
+				if (!empty($model->employee_ids)) {
+					foreach ($model->employee_ids as $empId) {
+						Yii::app()->db->createCommand()
+							->insert('task_employee', [
+								'task_id' => $model->id,
+								'employee_id' => $empId,
+							]);
+					}
+				}
+				$this->redirect(array('view','id'=>$model->id));
 			}
-
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->EmployeeID));
 		}
 
 		$this->render('update',array(
 			'model'=>$model,
-			'departmentList'=>$departmentList,
+			'categoryList'=>$categoryList,
 		));
 	}
 
@@ -163,62 +155,12 @@ class EmployeeController extends Controller
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
 	}
 
-	public function actionExport()
-	{
-		if (ob_get_length()) ob_clean(); // Clean any previous output
-
-		$this->layout = false;
-		Yii::app()->clientScript->reset();
-
-		$criteria = new CDbCriteria();
-		$criteria->with = ['department'];
-
-		$employees = Employee::model()->findAll($criteria);
-
-		header('Content-Type: text/csv; charset=utf-8');
-		header('Content-Disposition: attachment; filename=employee_export_' . date('Y-m-d') . '.csv');
-		header('Pragma: no-cache');
-		header('Expires: 0');
-
-		$output = fopen('php://output', 'w');
-
-		fputcsv($output, [
-			'ID',
-			'First Name',
-			'Last Name',
-			'Email',
-			'Phone Number',
-			'Hire Date',
-			'Job Title',
-			'Salary',
-			'Department Name'
-			// No image field
-		]);
-
-		foreach ($employees as $employee) {
-			fputcsv($output, [
-				$employee->EmployeeID,
-				$employee->FirstName,
-				$employee->LastName,
-				$employee->Email,
-				$employee->PhoneNumber,
-				$employee->HireDate,
-				$employee->JobTitle,
-				$employee->Salary,
-				isset($employee->department) ? $employee->department->DepartmentName : 'N/A'
-			]);
-		}
-
-		fclose($output);
-		Yii::app()->end();
-	}
-
 	/**
 	 * Lists all models.
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('Employee');
+		$dataProvider=new CActiveDataProvider('Task');
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));
@@ -229,18 +171,13 @@ class EmployeeController extends Controller
 	 */
 	public function actionAdmin()
 	{
-		$model=new Employee('search');
-		$departmentList = CHtml::listData(Department::model()->findAll(),
-			'DepartmentID',
-			'DepartmentName'
-		);
+		$model=new Task('search');
 		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['Employee']))
-			$model->attributes=$_GET['Employee'];
+		if(isset($_GET['Task']))
+			$model->attributes=$_GET['Task'];
 
 		$this->render('admin',array(
 			'model'=>$model,
-			'departmentList'=>$departmentList,
 		));
 	}
 
@@ -248,12 +185,12 @@ class EmployeeController extends Controller
 	 * Returns the data model based on the primary key given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.
 	 * @param integer $id the ID of the model to be loaded
-	 * @return Employee the loaded model
+	 * @return Task the loaded model
 	 * @throws CHttpException
 	 */
 	public function loadModel($id)
 	{
-		$model=Employee::model()->findByPk($id);
+		$model=Task::model()->findByPk($id);
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;
@@ -261,11 +198,11 @@ class EmployeeController extends Controller
 
 	/**
 	 * Performs the AJAX validation.
-	 * @param Employee $model the model to be validated
+	 * @param Task $model the model to be validated
 	 */
 	protected function performAjaxValidation($model)
 	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='employee-form')
+		if(isset($_POST['ajax']) && $_POST['ajax']==='task-form')
 		{
 			echo CActiveForm::validate($model);
 			Yii::app()->end();

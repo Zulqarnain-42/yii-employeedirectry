@@ -1,14 +1,18 @@
 <?php
-/* @var $this DepartmentController */
+/* @var $this TaskController */
 /* @var $dataProvider CActiveDataProvider */
 
 $this->breadcrumbs=array(
-	'Departments',
+	'Tasks',
 );
 
+$this->menu=array(
+	array('label'=>'Create Task', 'url'=>array('create')),
+	array('label'=>'Manage Task', 'url'=>array('admin')),
+);
 ?>
 
-<h1>Departments</h1>
+<h1>Tasks</h1>
 
 <?php $this->widget('zii.widgets.CListView', array(
 	'dataProvider'=>$dataProvider,

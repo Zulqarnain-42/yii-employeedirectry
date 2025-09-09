@@ -18,7 +18,8 @@
  */
 class Employee extends CActiveRecord
 {
-	public $Status; // Virtual attribute for status representation
+	public $ProfileImage;
+
 	/**
 	 * @return string the associated database table name
 	 */
@@ -40,11 +41,13 @@ class Employee extends CActiveRecord
 			array('FirstName, LastName', 'length', 'max'=>50),
 			array('Email, JobTitle', 'length', 'max'=>100),
 			array('PhoneNumber', 'length', 'max'=>20),
+			array('status', 'boolean'),
 			array('Salary', 'length', 'max'=>10),
 			array('CreatedAt, UpdatedAt', 'safe'),
+			array('ProfileImage', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('EmployeeID, FirstName, LastName, Email, PhoneNumber, HireDate, JobTitle, Salary, DepartmentID, CreatedAt, UpdatedAt, Status', 'safe', 'on'=>'search'),
+			array('EmployeeID, FirstName, LastName, Email, PhoneNumber, HireDate, JobTitle, Salary, DepartmentID, CreatedAt, UpdatedAt,status', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -56,9 +59,17 @@ class Employee extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'department' => array(self::BELONGS_TO, 'Department', 'department_id'),
+			'department' => array(self::BELONGS_TO, 'Department', 'DepartmentID'),
+			'tasks' => array(self::MANY_MANY, 'Task', 'task_employee(employee_id, task_id)'),
+			'user' => [self::HAS_ONE, 'User', 'EmployeeID'],
 		);
 	}
+
+	public function getFullName()
+	{
+		return $this->FirstName . ' ' . $this->LastName;
+	}
+
 
 	/**
 	 * @return array customized attribute labels (name=>label)
@@ -77,7 +88,7 @@ class Employee extends CActiveRecord
 			'DepartmentID' => 'Department',
 			'CreatedAt' => 'Created At',
 			'UpdatedAt' => 'Updated At',
-			'Status' => 'Status',
+			'ProfileImage' => 'Profile Image',
 		);
 	}
 
@@ -110,7 +121,6 @@ class Employee extends CActiveRecord
 		$criteria->compare('DepartmentID',$this->DepartmentID);
 		$criteria->compare('CreatedAt',$this->CreatedAt,true);
 		$criteria->compare('UpdatedAt',$this->UpdatedAt,true);
-		$criteria->compare('Status',$this->Status,true);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

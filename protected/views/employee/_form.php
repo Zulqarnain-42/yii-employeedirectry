@@ -8,12 +8,10 @@
 
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'employee-form',
-	// Please note: When you enable ajax validation, make sure the corresponding
-	// controller action is handling ajax validation correctly.
-	// There is a call to performAjaxValidation() commented in generated controller code.
-	// See class documentation of CActiveForm for details on this.
 	'enableAjaxValidation'=>false,
+	'htmlOptions'=>array('enctype'=>'multipart/form-data'),
 )); ?>
+
 
 	<p class="note">Fields with <span class="required">*</span> are required.</p>
 
@@ -41,6 +39,20 @@
 		<?php echo $form->labelEx($model,'PhoneNumber'); ?>
 		<?php echo $form->textField($model,'PhoneNumber',array('size'=>20,'maxlength'=>20)); ?>
 		<?php echo $form->error($model,'PhoneNumber'); ?>
+	</div>
+
+	<?php if (!$model->isNewRecord && !empty($model->ProfileImage)): ?>
+		<div class="row">
+			<label>Current Image:</label><br>
+			<img src="data:image/jpeg;base64,<?php echo base64_encode($model->ProfileImage); ?>" width="150" />
+		</div>
+	<?php endif; ?>
+
+
+	<div class="row">
+		<?php echo $form->labelEx($model, 'ProfileImage'); ?>
+		<?php echo $form->fileField($model, 'ProfileImage'); ?>
+		<?php echo $form->error($model, 'ProfileImage'); ?>
 	</div>
 
 	<div class="row">
@@ -87,6 +99,16 @@
 		<?php echo $form->dropDownList($model,'DepartmentID',$departmentList,array('prompt' => 'Select Department','class' => 'form-control')); ?>
 		<?php echo $form->error($model,'DepartmentID'); ?>
 	</div>
+
+	<div class="row">
+		<?php echo $form->labelEx($model,'status'); ?>
+		<?php echo $form->dropDownList($model,'status', array(
+			1 => 'Active',
+			0 => 'Inactive'
+		), array('prompt'=>'Select Status')); ?>
+		<?php echo $form->error($model,'status'); ?>
+	</div>
+
 
 	<div class="row buttons">
 		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save'); ?>

@@ -33,20 +33,28 @@ class UserIdentity extends CUserIdentity
 		return !$this->errorCode;
 		*/
 
-		$user = Users::model()->findByAttributes(array('username' => $this->username));
+		$user = Users::model()->with('employee')->findByAttributes(['username' => $this->username]);
 
-        if ($user === null) {
-            $this->errorCode = self::ERROR_USERNAME_INVALID;
-        } elseif (!password_verify($this->password, $user->password_hash)) {
-            $this->errorCode = self::ERROR_PASSWORD_INVALID;
-        } else {
-            $this->_id = $user->id;
-            $this->username = $user->username;
+		if ($user === null) {
+			$this->errorCode = self::ERROR_USERNAME_INVALID;
+
+		} elseif (!password_verify($this->password, $user->password_hash)) {
+			$this->errorCode = self::ERROR_PASSWORD_INVALID;
+
+		} elseif ($user->employee !== null && $user->employee->status == 0) {
+			// Block login if employee is inactive (status = 0 or false)
+			$this->errorCode = self::ERROR_UNKNOWN_IDENTITY;
+			Yii::app()->user->setFlash('error', 'Your account is inactive. Please contact administrator.');
+
+		} else {
+			$this->_id = $user->id;
+			$this->username = $user->username;
 			$this->setState('is_admin', (bool)$user->role);
-            $this->errorCode = self::ERROR_NONE;
-        }
+			$this->errorCode = self::ERROR_NONE;
+		}
 
-        return !$this->errorCode;
+		return !$this->errorCode;
+
 	}
 
 	public function getId()

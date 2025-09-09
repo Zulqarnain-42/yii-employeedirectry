@@ -102,30 +102,127 @@ class SiteController extends Controller
 		$this->render('login',array('model'=>$model));
 	}
 
-	public function actionRegister() {
+	public function actionDashboard() {
+		if (Yii::app()->user->isGuest) {
+			$this->redirect(array('site/login'));
+		}
 
-		if (!Yii::app()->user->isGuest && !Yii::app()->user->is_admin) {
-        	$this->redirect(array('site/index'));
-    	}
-    	$model = new Users;
+		$userId = Yii::app()->user->id;
+    $user = Users::model()->with('employee')->findByPk($userId);
 
-    	if (isset($_POST['Users'])) {
-        	$model->attributes = $_POST['Users'];
-        	// Hash the raw password (assuming form input name is 'password')
-        	$model->password_hash = password_hash($_POST['Users']['password'], PASSWORD_BCRYPT);
+    if (!$user || !$user->employee) {
+        throw new CHttpException(403, 'No employee linked to this user.');
+    }
 
+    $employeeId = $user->employee->EmployeeID;
 
-        	if ($model->validate() && $model->save()) {
+    // Get all categories that have at least one task assigned to this employee
+    $categories = TaskCategory::model()->with(array(
+        'tasks' => array(
+            'joinType' => 'INNER JOIN',
+            'condition' => 'EXISTS (
+                SELECT 1 FROM task_employee te
+                WHERE te.task_id = tasks.id AND te.employee_id = :eid
+            )',
+            'params' => array(':eid' => $employeeId),
+        )
+    ))->findAll();
 
-            	Yii::app()->user->setFlash('message', 'Registration successful. You can now log in.');
-            	$this->refresh();
-        	} else {
-            	Yii::app()->user->setFlash('error', 'Registration failed. Please try again.');
-        	}
-    	}
-
-    	$this->render('register', array('model' => $model));
+    $this->render('dashboard', array(
+        'categories' => $categories,
+    ));
 	}
+
+	public function actionAdminDashboard() {
+		// Departments with employee counts
+    $deptData = Yii::app()->db->createCommand("
+        SELECT d.DepartmentName, COUNT(e.EmployeeID) AS EmployeeCount
+        FROM department d
+        LEFT JOIN employee e ON e.DepartmentID = d.DepartmentID
+        GROUP BY d.DepartmentName
+    ")->queryAll();
+
+    // Totals
+    $totals = Yii::app()->db->createCommand("
+        SELECT
+            (SELECT COUNT(*) FROM department) AS TotalDepartments,
+            (SELECT COUNT(*) FROM task_category) AS TotalCategories,
+            (SELECT COUNT(*) FROM task) AS TotalTasks
+    ")->queryRow();
+
+    // Task assignments
+    $assignments = Yii::app()->db->createCommand("
+        SELECT t.title AS TaskTitle,
+               CONCAT(emp.FirstName, ' ', emp.LastName) AS AssignedTo
+        FROM task t
+        JOIN task_employee te ON te.task_id = t.id
+        JOIN employee emp ON emp.EmployeeID = te.employee_id
+    ")->queryAll();
+
+    $this->render('adminDashboard', [
+        'deptData'     => $deptData,
+        'totals'       => $totals,
+        'assignments'  => $assignments,
+    ]);
+	}
+
+	public function actionCategoryTasks($categoryId)
+{
+    // Get logged-in user id
+    $userId = Yii::app()->user->id;
+
+    // Get user with employee relation
+    $user = Users::model()->with('employee')->findByPk($userId);
+
+    if (!$user || !$user->employee) {
+        throw new CHttpException(403, 'No employee linked to this user.');
+    }
+
+    $employeeId = $user->employee->EmployeeID;
+
+    // Fetch tasks for this employee and category
+    $tasks = Task::model()->with('TaskCategory')->findAll(array(
+        'join' => 'INNER JOIN task_employee te ON te.task_id = t.id',
+        'condition' => 'te.employee_id = :eid AND t.TaskCategoryID = :cid',
+        'params' => array(':eid' => $employeeId, ':cid' => $categoryId),
+    ));
+
+    // Optionally get category name or info for display
+    $category = TaskCategory::model()->findByPk($categoryId);
+
+    if (!$category) {
+        throw new CHttpException(404, 'Category not found.');
+    }
+
+    // Render view with tasks and category info
+    $this->render('categoryTask', [
+        'tasks' => $tasks,
+        'category' => $category,
+    ]);
+}
+
+public function actionUpdateTaskStatus()
+{
+    if (Yii::app()->request->isPostRequest) {
+        $data = json_decode(file_get_contents('php://input'), true);
+        $taskId = $data['id'] ?? null;
+        $newStatus = isset($data['status']) ? (int)$data['status'] : null;
+
+        if ($taskId !== null && $newStatus !== null) {
+            $task = Task::model()->findByPk($taskId);
+            if ($task) {
+                $task->status = $newStatus;
+                if ($task->save(false, ['status'])) {
+                    echo CJSON::encode(['success' => true]);
+                    Yii::app()->end();
+                }
+            }
+        }
+    }
+    echo CJSON::encode(['success' => false]);
+    Yii::app()->end();
+}
+
 
 	/**
 	 * Logs out the current user and redirect to homepage.

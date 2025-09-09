@@ -1,15 +1,15 @@
 <?php
-/* @var $this EmployeeController */
-/* @var $model Employee */
+/* @var $this TaskController */
+/* @var $model Task */
 
 $this->breadcrumbs=array(
-	'Employees'=>array('index'),
+	'Tasks'=>array('index'),
 	'Manage',
 );
 
 $this->menu=array(
-	array('label'=>'List Employee', 'url'=>array('index')),
-	array('label'=>'Create Employee', 'url'=>array('create')),
+	array('label'=>'List Task', 'url'=>array('index')),
+	array('label'=>'Create Task', 'url'=>array('create')),
 );
 
 Yii::app()->clientScript->registerScript('search', "
@@ -18,7 +18,7 @@ $('.search-button').click(function(){
 	return false;
 });
 $('.search-form form').submit(function(){
-	$('#employee-grid').yiiGridView('update', {
+	$('#task-grid').yiiGridView('update', {
 		data: $(this).serialize()
 	});
 	return false;
@@ -26,7 +26,7 @@ $('.search-form form').submit(function(){
 ");
 ?>
 
-<h1>Manage Employees</h1>
+<h1>Manage Tasks</h1>
 
 <p>
 You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>
@@ -37,36 +37,24 @@ or <b>=</b>) at the beginning of each of your search values to specify how the c
 <div class="search-form" style="display:none">
 <?php $this->renderPartial('_search',array(
 	'model'=>$model,
-	'departmentList'=>$departmentList,
 )); ?>
 </div><!-- search-form -->
-<?php echo CHtml::link('Export Employees to CSV', array('employee/export'), array('class' => 'btn btn-success')); ?>
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>'employee-grid',
+	'id'=>'task-grid',
 	'dataProvider'=>$model->search(),
 	'filter'=>$model,
 	'columns'=>array(
-		'EmployeeID',
-		'FirstName',
-		'LastName',
-		'Email',
-		'PhoneNumber',
-
-		// ✅ Add the status column here
-		array(
-			'name' => 'status',
-			'header' => 'Status',
-			'value' => '($data->status) ? "Active" : "Inactive"',
-			'filter' => array(1 => 'Active', 0 => 'Inactive'),
-			'type' => 'raw',
-			'htmlOptions' => array('style' => 'text-align:center;'),
-		),
-
+		'id',
+		'title',
+		'description',
+		'status',
+		'created_at',
+		/*
+		'updated_at',
+		*/
 		array(
 			'class'=>'CButtonColumn',
 		),
 	),
 )); ?>
-
-

@@ -1,29 +1,22 @@
 <?php
 
 /**
- * This is the model class for table "users".
+ * This is the model class for table "task_category".
  *
- * The followings are the available columns in table 'users':
- * @property string $id
- * @property string $username
- * @property string $email
- * @property string $password_hash
- * @property string $full_name
- * @property string $role
+ * The followings are the available columns in table 'task_category':
+ * @property integer $id
+ * @property string $name
+ * @property string $description
  * @property string $created_at
- * @property string $updated_at
  */
-class Users extends CActiveRecord
+class TaskCategory extends CActiveRecord
 {
-	public $password; // For handling plain text password input
-	public $repeat_password; // For confirming password input
-	public $Employee_Id; // Foreign key to Employee table
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'users';
+		return 'task_category';
 	}
 
 	/**
@@ -34,17 +27,12 @@ class Users extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('username, email, password', 'required'),
-			array('username, role', 'length', 'max'=>50),
-			array('email, full_name', 'length', 'max'=>100),
-			array('password_hash', 'length', 'max'=>255),
-			array('created_at, updated_at', 'safe'),
-			array('Employee_Id', 'numerical', 'integerOnly'=>true),
-			array('repeat_password', 'compare', 'compareAttribute' => 'password', 'message' => 'Passwords must match.'),
-
+			array('name', 'required'),
+			array('name', 'length', 'max'=>100),
+			array('description, created_at', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, username, email, password_hash, full_name, role, created_at, updated_at, Employee_Id', 'safe', 'on'=>'search'),
+			array('id, name, description, created_at', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -56,7 +44,7 @@ class Users extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'employee' => [self::BELONGS_TO, 'Employee', 'Employee_Id'],
+			'tasks' => array(self::HAS_MANY, 'Task', 'TaskCategoryID'),
 		);
 	}
 
@@ -67,15 +55,9 @@ class Users extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'username' => 'Username',
-			'email' => 'Email',
-			'password_hash' => 'Password Hash',
-			'full_name' => 'Full Name',
-			'role' => 'Role',
+			'name' => 'Name',
+			'description' => 'Description',
 			'created_at' => 'Created At',
-			'updated_at' => 'Updated At',
-			'password' => 'Password',
-			'repeat_password' => 'Repeat Password',
 		);
 	}
 
@@ -97,14 +79,10 @@ class Users extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('id',$this->id,true);
-		$criteria->compare('username',$this->username,true);
-		$criteria->compare('email',$this->email,true);
-		$criteria->compare('password_hash',$this->password_hash,true);
-		$criteria->compare('full_name',$this->full_name,true);
-		$criteria->compare('role',$this->role,true);
+		$criteria->compare('id',$this->id);
+		$criteria->compare('name',$this->name,true);
+		$criteria->compare('description',$this->description,true);
 		$criteria->compare('created_at',$this->created_at,true);
-		$criteria->compare('updated_at',$this->updated_at,true);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -115,7 +93,7 @@ class Users extends CActiveRecord
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return Users the static model class
+	 * @return TaskCategory the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{

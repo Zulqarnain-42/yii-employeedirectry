@@ -1,29 +1,27 @@
 <?php
 
 /**
- * This is the model class for table "users".
+ * This is the model class for table "task".
  *
- * The followings are the available columns in table 'users':
- * @property string $id
- * @property string $username
- * @property string $email
- * @property string $password_hash
- * @property string $full_name
- * @property string $role
+ * The followings are the available columns in table 'task':
+ * @property integer $id
+ * @property string $title
+ * @property string $description
+ * @property integer $status
  * @property string $created_at
  * @property string $updated_at
  */
-class Users extends CActiveRecord
+class Task extends CActiveRecord
 {
-	public $password; // For handling plain text password input
-	public $repeat_password; // For confirming password input
-	public $Employee_Id; // Foreign key to Employee table
+	public $employee_ids = array();
+	public $TaskCategoryID; // For task category association
+
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'users';
+		return 'task';
 	}
 
 	/**
@@ -34,17 +32,14 @@ class Users extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('username, email, password', 'required'),
-			array('username, role', 'length', 'max'=>50),
-			array('email, full_name', 'length', 'max'=>100),
-			array('password_hash', 'length', 'max'=>255),
-			array('created_at, updated_at', 'safe'),
-			array('Employee_Id', 'numerical', 'integerOnly'=>true),
-			array('repeat_password', 'compare', 'compareAttribute' => 'password', 'message' => 'Passwords must match.'),
-
+			array('title', 'required'),
+			array(' status', 'numerical', 'integerOnly'=>true),
+			array('title', 'length', 'max'=>255),
+			array('description, created_at, updated_at', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, username, email, password_hash, full_name, role, created_at, updated_at, Employee_Id', 'safe', 'on'=>'search'),
+			array('id, title, description, status, created_at, updated_at, TaskCategoryID', 'safe', 'on'=>'search'),
+			array('employee_ids', 'safe'),
 		);
 	}
 
@@ -56,7 +51,8 @@ class Users extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'employee' => [self::BELONGS_TO, 'Employee', 'Employee_Id'],
+			'employees' => array(self::MANY_MANY, 'Employee', 'task_employee(task_id, employee_id)'),
+			'TaskCategory' => array(self::BELONGS_TO, 'TaskCategory', 'TaskCategoryID'),
 		);
 	}
 
@@ -67,15 +63,13 @@ class Users extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'username' => 'Username',
-			'email' => 'Email',
-			'password_hash' => 'Password Hash',
-			'full_name' => 'Full Name',
-			'role' => 'Role',
+			'title' => 'Title',
+			'description' => 'Description',
+			'status' => 'Status',
 			'created_at' => 'Created At',
 			'updated_at' => 'Updated At',
-			'password' => 'Password',
-			'repeat_password' => 'Repeat Password',
+			'employee_ids' => 'Assign To Employees',
+			'TaskCategoryID' => 'Task Category',
 		);
 	}
 
@@ -97,12 +91,10 @@ class Users extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('id',$this->id,true);
-		$criteria->compare('username',$this->username,true);
-		$criteria->compare('email',$this->email,true);
-		$criteria->compare('password_hash',$this->password_hash,true);
-		$criteria->compare('full_name',$this->full_name,true);
-		$criteria->compare('role',$this->role,true);
+		$criteria->compare('id',$this->id);
+		$criteria->compare('title',$this->title,true);
+		$criteria->compare('description',$this->description,true);
+		$criteria->compare('status',$this->status);
 		$criteria->compare('created_at',$this->created_at,true);
 		$criteria->compare('updated_at',$this->updated_at,true);
 
@@ -111,11 +103,18 @@ class Users extends CActiveRecord
 		));
 	}
 
+	protected function afterFind()
+	{
+		parent::afterFind();
+		$this->employee_ids = CHtml::listData($this->employees, 'EmployeeID', 'EmployeeID');
+	}
+
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return Users the static model class
+	 * @return Task the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{

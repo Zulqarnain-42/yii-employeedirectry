@@ -31,13 +31,15 @@ class UsersController extends Controller
 				'actions'=>array('index','view'),
 				'users'=>array('*'),
 			),
-			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update'),
-				'users'=>array('@'),
+			array('allow',
+				'actions' => array('index', 'view', 'userTasks'),
+				'users' => array('@'),
 			),
-			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete'),
-				'users'=>array('admin'),
+
+			// Allow full access to admin for everything
+			array('allow',
+				'users' => array('@'),
+				'expression' => 'Yii::app()->user->is_admin == true',
 			),
 			array('deny',  // deny all users
 				'users'=>array('*'),
@@ -63,6 +65,8 @@ class UsersController extends Controller
 	public function actionCreate()
 	{
 		$model=new Users;
+		$employeeList = CHtml::listData(Employee::model()->findAll(), 'EmployeeID', 'FullName');
+
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -70,12 +74,15 @@ class UsersController extends Controller
 		if(isset($_POST['Users']))
 		{
 			$model->attributes=$_POST['Users'];
+			$model->password_hash = password_hash($_POST['Users']['password'], PASSWORD_BCRYPT);
+
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
 
 		$this->render('create',array(
 			'model'=>$model,
+			'employeeList'=>$employeeList,
 		));
 	}
 
@@ -87,6 +94,7 @@ class UsersController extends Controller
 	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id);
+		$employeeList = CHtml::listData(Employee::model()->findAll(), 'EmployeeID', 'FullName');
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -94,12 +102,15 @@ class UsersController extends Controller
 		if(isset($_POST['Users']))
 		{
 			$model->attributes=$_POST['Users'];
+			$model->password_hash = password_hash($_POST['Users']['password'], PASSWORD_BCRYPT);
+
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
 
 		$this->render('update',array(
 			'model'=>$model,
+			'employeeList'=>$employeeList,
 		));
 	}
 
