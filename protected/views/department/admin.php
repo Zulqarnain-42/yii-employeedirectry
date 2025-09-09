@@ -50,7 +50,6 @@ $('.search-form form').submit(function(){
         <?php $this->widget('zii.widgets.grid.CGridView', array(
             'id' => 'department-grid',
             'dataProvider' => $model->search(),
-            'filter' => $model,
             'itemsCssClass' => 'min-w-full divide-y divide-gray-200 table-auto',
             'htmlOptions' => ['class' => 'w-full'],
             'pagerCssClass' => 'mt-4 flex justify-center space-x-2 text-sm',
@@ -64,47 +63,68 @@ $('.search-form form').submit(function(){
                     'name' => 'DepartmentName',
                     'htmlOptions' => ['class' => 'px-4 py-2 text-gray-700'],
                     'headerHtmlOptions' => ['class' => 'px-4 py-2 bg-gray-100 text-left text-sm font-medium text-gray-600'],
+
                 ),
                 array(
                     'name' => 'Location',
                     'htmlOptions' => ['class' => 'px-4 py-2 text-gray-700'],
                     'headerHtmlOptions' => ['class' => 'px-4 py-2 bg-gray-100 text-left text-sm font-medium text-gray-600'],
+
                 ),
                 array(
                     'name' => 'CreatedAt',
                     'htmlOptions' => ['class' => 'px-4 py-2 text-gray-700'],
                     'headerHtmlOptions' => ['class' => 'px-4 py-2 bg-gray-100 text-left text-sm font-medium text-gray-600'],
+
                 ),
                 array(
-    'class' => 'CButtonColumn',
-    'template' => '{view} {update} {delete}',
-    'htmlOptions' => ['class' => 'px-4 py-2'],
-    'headerHtmlOptions' => ['class' => 'px-4 py-2 bg-gray-100 text-left text-sm font-medium text-gray-600'],
-    'buttons' => array(
-        'view' => array(
-            'label' => '👁️',
-            'options' => array(
-                'title' => 'View',
-                'class' => 'inline-block bg-blue-100 text-blue-600 px-2 py-1 rounded hover:bg-blue-200 transition text-sm',
-            ),
-        ),
-        'update' => array(
-            'label' => '✏️',
-            'options' => array(
-                'title' => 'Update',
-                'class' => 'inline-block bg-yellow-100 text-yellow-700 px-2 py-1 rounded hover:bg-yellow-200 transition text-sm',
-            ),
-        ),
-        'delete' => array(
-            'label' => '🗑️',
-            'options' => array(
-                'title' => 'Delete',
-                'class' => 'inline-block bg-red-100 text-red-600 px-2 py-1 rounded hover:bg-red-200 transition text-sm',
-            ),
-        ),
-    ),
-),
+					'class' => 'CButtonColumn',
+					'template' => '{view} {update} {delete}',
+					'htmlOptions' => ['class' => 'px-4 py-2'],
+					'headerHtmlOptions' => ['class' => 'px-4 py-2 bg-gray-100 text-left text-sm font-medium text-gray-600'],
+					'buttons' => array(
+						'view' => array(
+							'label' => '👁️',
+							'options' => array(
+								'title' => 'View',
+								'class' => 'inline-block bg-blue-100 text-blue-600 px-2 py-1 rounded hover:bg-blue-200 transition text-sm',
+							),
+						),
+						'update' => array(
+							'label' => '✏️',
+							'options' => array(
+								'title' => 'Update',
+								'class' => 'inline-block bg-yellow-100 text-yellow-700 px-2 py-1 rounded hover:bg-yellow-200 transition text-sm',
+							),
+						),
+						'delete' => array(
+							'label' => '🗑️',
+							'url' => 'Yii::app()->createUrl("department/delete", array("id"=>$data->DepartmentID))',
+							'options' => array(
+								'title' => 'Delete',
+								'class' => 'inline-block bg-red-100 text-red-600 px-2 py-1 rounded hover:bg-red-200 transition text-sm',
+								'onclick' => 'if(confirm("Are you sure you want to delete this department?")) {
+									var form = document.createElement("form");
+									form.method = "POST";
+									form.action = this.href;
 
+									// CSRF token if enabled
+									var csrfToken = "' . Yii::app()->request->csrfToken . '";
+									var csrfName = "' . Yii::app()->request->csrfTokenName . '";
+									var input = document.createElement("input");
+									input.type = "hidden";
+									input.name = csrfName;
+									input.value = csrfToken;
+									form.appendChild(input);
+
+									document.body.appendChild(form);
+									form.submit();
+								}
+								return false;',
+							),
+						),
+					),
+				),
             ),
         )); ?>
     </div>

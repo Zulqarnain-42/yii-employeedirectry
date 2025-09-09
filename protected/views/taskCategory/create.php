@@ -7,10 +7,6 @@ $this->breadcrumbs=array(
 	'Create',
 );
 
-$this->menu=array(
-	array('label'=>'List TaskCategory', 'url'=>array('index')),
-	array('label'=>'Manage TaskCategory', 'url'=>array('admin')),
-);
 ?>
 
 <h1>Create TaskCategory</h1>

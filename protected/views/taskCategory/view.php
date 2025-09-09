@@ -7,13 +7,6 @@ $this->breadcrumbs=array(
 	$model->name,
 );
 
-$this->menu=array(
-	array('label'=>'List TaskCategory', 'url'=>array('index')),
-	array('label'=>'Create TaskCategory', 'url'=>array('create')),
-	array('label'=>'Update TaskCategory', 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>'Delete TaskCategory', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-	array('label'=>'Manage TaskCategory', 'url'=>array('admin')),
-);
 ?>
 
 <h1>View TaskCategory #<?php echo $model->id; ?></h1>

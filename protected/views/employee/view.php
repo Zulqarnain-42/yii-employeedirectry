@@ -7,13 +7,6 @@ $this->breadcrumbs=array(
 	$model->EmployeeID,
 );
 
-$this->menu=array(
-	array('label'=>'List Employee', 'url'=>array('index')),
-	array('label'=>'Create Employee', 'url'=>array('create')),
-	array('label'=>'Update Employee', 'url'=>array('update', 'id'=>$model->EmployeeID)),
-	array('label'=>'Delete Employee', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->EmployeeID),'confirm'=>'Are you sure you want to delete this item?')),
-	array('label'=>'Manage Employee', 'url'=>array('admin')),
-);
 ?>
 
 <h1>View Employee #<?php echo $model->EmployeeID; ?></h1>

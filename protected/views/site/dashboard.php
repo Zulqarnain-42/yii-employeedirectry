@@ -3,15 +3,15 @@
 <?php if (empty($categories)): ?>
     <p class="text-gray-500 italic">No task categories assigned to you.</p>
 <?php else: ?>
-    <ul class="list-disc list-inside space-y-2">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <?php foreach ($categories as $category): ?>
-            <li>
+            <div class="p-4 border rounded shadow-sm bg-white hover:shadow-md transition-shadow duration-200">
                 <?php echo CHtml::link(
                     CHtml::encode($category->name),
                     array('site/categoryTasks', 'categoryId' => $category->id),
-                    ['class' => 'text-blue-600 hover:underline transition-colors duration-150']
+                    ['class' => 'text-blue-600 font-medium hover:underline']
                 ); ?>
-            </li>
+            </div>
         <?php endforeach; ?>
-    </ul>
+    </div>
 <?php endif; ?>

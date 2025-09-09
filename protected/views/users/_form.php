@@ -4,80 +4,82 @@
 /* @var $form CActiveForm */
 ?>
 
-<div class="form">
+<div class="form max-w-3xl mx-auto bg-white p-6 rounded shadow">
 
-
-<?php $form=$this->beginWidget('CActiveForm', array(
-	'id'=>'users-form',
-	'action' => $this->createUrl('site/register'),
-	// Please note: When you enable ajax validation, make sure the corresponding
-	// controller action is handling ajax validation correctly.
-	// There is a call to performAjaxValidation() commented in generated controller code.
-	// See class documentation of CActiveForm for details on this.
-	'enableAjaxValidation'=>false,
+<?php $form = $this->beginWidget('CActiveForm', array(
+    'id' => 'users-form',
+    'enableAjaxValidation' => false,
 )); ?>
 
-	<p class="note">Fields with <span class="required">*</span> are required.</p>
+    <p class="note text-sm text-gray-600 mb-4">Fields with <span class="required text-red-500">*</span> are required.</p>
 
-	<?php echo $form->errorSummary($model); ?>
+    <?php echo $form->errorSummary($model, null, null, ['class' => 'text-red-600 mb-4']); ?>
 
-	<!-- Employee Dropdown -->
-    <div class="row">
-        <?php echo $form->labelEx($model, 'Employee_Id'); ?>
+    <!-- Employee Dropdown -->
+    <div class="mb-4">
+        <?php echo $form->labelEx($model, 'Employee_Id', ['class' => 'block text-gray-700']); ?>
         <?php echo $form->dropDownList(
             $model,
             'Employee_Id',
             $employeeList,
             [
                 'prompt' => 'Select Employee',
+                'class' => 'w-full border border-gray-300 rounded px-3 py-2',
                 'ajax' => [
                     'type' => 'POST',
                     'url' => Yii::app()->createUrl('employee/getEmployeeData'),
                     'data' => ['EmployeeID' => 'js:this.value'],
                     'success' => 'function(data) {
-                        var emp = JSON.parse(data);
-                        $("#Users_full_name").val(emp.fullName);
-                        $("#Users_email").val(emp.Email);
+                        try {
+                            var emp = JSON.parse(data);
+                            $("#Users_full_name").val(emp.fullName);
+                            $("#Users_email").val(emp.Email);
+                        } catch(e) {
+                            console.error("Invalid JSON:", data);
+                        }
                     }',
                 ],
             ]
         ); ?>
-        <?php echo $form->error($model, 'Employee_id'); ?>
+        <?php echo $form->error($model, 'Employee_Id', ['class' => 'text-red-500 text-sm']); ?>
     </div>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'username'); ?>
-		<?php echo $form->textField($model,'username',array('size'=>50,'maxlength'=>50)); ?>
-		<?php echo $form->error($model,'username'); ?>
-	</div>
+    <div class="mb-4">
+        <?php echo $form->labelEx($model, 'username', ['class' => 'block text-gray-700']); ?>
+        <?php echo $form->textField($model, 'username', ['class' => 'w-full border border-gray-300 rounded px-3 py-2']); ?>
+        <?php echo $form->error($model, 'username', ['class' => 'text-red-500 text-sm']); ?>
+    </div>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'full_name'); ?>
-		<?php echo $form->textField($model,'full_name',array('size'=>60,'maxlength'=>100)); ?>
-		<?php echo $form->error($model,'full_name'); ?>
-	</div>
+    <div class="mb-4">
+        <?php echo $form->labelEx($model, 'full_name', ['class' => 'block text-gray-700']); ?>
+        <?php echo $form->textField($model, 'full_name', ['class' => 'w-full border border-gray-300 rounded px-3 py-2']); ?>
+        <?php echo $form->error($model, 'full_name', ['class' => 'text-red-500 text-sm']); ?>
+    </div>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'email'); ?>
-		<?php echo $form->textField($model,'email',array('size'=>60,'maxlength'=>100)); ?>
-		<?php echo $form->error($model,'email'); ?>
-	</div>
+    <div class="mb-4">
+        <?php echo $form->labelEx($model, 'email', ['class' => 'block text-gray-700']); ?>
+        <?php echo $form->textField($model, 'email', ['class' => 'w-full border border-gray-300 rounded px-3 py-2']); ?>
+        <?php echo $form->error($model, 'email', ['class' => 'text-red-500 text-sm']); ?>
+    </div>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'password'); ?>
-		<?php echo $form->passwordField($model,'password',array('size'=>60,'maxlength'=>255)); ?>
-		<?php echo $form->error($model,'password'); ?>
-	</div>
+    <div class="mb-4">
+        <?php echo $form->labelEx($model, 'password', ['class' => 'block text-gray-700']); ?>
+        <?php echo $form->passwordField($model, 'password', ['class' => 'w-full border border-gray-300 rounded px-3 py-2']); ?>
+        <?php echo $form->error($model, 'password', ['class' => 'text-red-500 text-sm']); ?>
+    </div>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'repeat_password'); ?>
-		<?php echo $form->passwordField($model,'repeat_password',array('size'=>60,'maxlength'=>255)); ?>
-		<?php echo $form->error($model,'repeat_password'); ?>
-	</div>
+    <div class="mb-4">
+        <?php echo $form->labelEx($model, 'repeat_password', ['class' => 'block text-gray-700']); ?>
+        <?php echo $form->passwordField($model, 'repeat_password', ['class' => 'w-full border border-gray-300 rounded px-3 py-2']); ?>
+        <?php echo $form->error($model, 'repeat_password', ['class' => 'text-red-500 text-sm']); ?>
+    </div>
 
-	<div class="row buttons">
-		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save'); ?>
-	</div>
+    <div class="mt-6">
+        <?php echo CHtml::submitButton(
+            $model->isNewRecord ? 'Create' : 'Save',
+            ['class' => 'bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition']
+        ); ?>
+    </div>
 
 <?php $this->endWidget(); ?>
 

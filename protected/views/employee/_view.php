@@ -3,49 +3,40 @@
 /* @var $data Employee */
 ?>
 
-<div class="view">
+<div class="bg-white shadow rounded-lg p-6 mb-4 border border-gray-200">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">
+        <?php echo CHtml::encode($data->FirstName . ' ' . $data->LastName); ?>
+    </h3>
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('FirstName')); ?>:</b>
-	<?php echo CHtml::encode($data->FirstName); ?>
-	<br />
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+        <div>
+            <span class="font-medium">First Name:</span>
+            <div><?php echo CHtml::encode($data->FirstName); ?></div>
+        </div>
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('LastName')); ?>:</b>
-	<?php echo CHtml::encode($data->LastName); ?>
-	<br />
+        <div>
+            <span class="font-medium">Last Name:</span>
+            <div><?php echo CHtml::encode($data->LastName); ?></div>
+        </div>
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('Email')); ?>:</b>
-	<?php echo CHtml::encode($data->Email); ?>
-	<br />
+        <div>
+            <span class="font-medium">Email:</span>
+            <div><?php echo CHtml::encode($data->Email); ?></div>
+        </div>
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('PhoneNumber')); ?>:</b>
-	<?php echo CHtml::encode($data->PhoneNumber); ?>
-	<br />
+        <div>
+            <span class="font-medium">Phone Number:</span>
+            <div><?php echo CHtml::encode($data->PhoneNumber); ?></div>
+        </div>
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('HireDate')); ?>:</b>
-	<?php echo CHtml::encode($data->HireDate); ?>
-	<br />
+        <div>
+            <span class="font-medium">Hire Date:</span>
+            <div><?php echo CHtml::encode($data->HireDate); ?></div>
+        </div>
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('JobTitle')); ?>:</b>
-	<?php echo CHtml::encode($data->JobTitle); ?>
-	<br />
-
-	<?php /*
-	<b><?php echo CHtml::encode($data->getAttributeLabel('Salary')); ?>:</b>
-	<?php echo CHtml::encode($data->Salary); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('DepartmentID')); ?>:</b>
-	<?php echo CHtml::encode($data->DepartmentID); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('CreatedAt')); ?>:</b>
-	<?php echo CHtml::encode($data->CreatedAt); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('UpdatedAt')); ?>:</b>
-	<?php echo CHtml::encode($data->UpdatedAt); ?>
-	<br />
-
-	*/ ?>
-
+        <div>
+            <span class="font-medium">Job Title:</span>
+            <div><?php echo CHtml::encode($data->JobTitle); ?></div>
+        </div>
+    </div>
 </div>

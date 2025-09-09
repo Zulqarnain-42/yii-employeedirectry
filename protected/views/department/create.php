@@ -8,6 +8,5 @@ $this->breadcrumbs=array(
 );
 ?>
 
-<h1>Create Department</h1>
 
 <?php $this->renderPartial('_form', array('model'=>$model)); ?>

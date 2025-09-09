@@ -10,6 +10,4 @@ $this->breadcrumbs=array(
 
 ?>
 
-<h1>Update Department <?php echo $model->DepartmentID; ?></h1>
-
 <?php $this->renderPartial('_form', array('model'=>$model)); ?>

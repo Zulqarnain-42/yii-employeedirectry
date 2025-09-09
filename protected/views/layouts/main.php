@@ -14,15 +14,6 @@
 
 <div class="max-w-7xl mx-auto p-4">
 
-	<!-- Header -->
-	<header class="bg-white shadow mb-6">
-		<div class="max-w-7xl mx-auto px-4 py-6 flex justify-between items-center">
-			<h1 class="text-2xl font-bold text-gray-900" id="logo">
-				<?php echo CHtml::encode(Yii::app()->name); ?>
-			</h1>
-		</div>
-	</header>
-
 	<!-- Navigation -->
 	<nav class="bg-white shadow mb-6 rounded-lg">
 		<ul class="flex flex-wrap space-x-4 p-4 text-gray-700">
@@ -35,8 +26,8 @@
 
 					array('label'=>'Dashboard', 'url'=>array('/site/admindashboard'), 'visible'=>!Yii::app()->user->isGuest && Yii::app()->user->is_admin == true),
 					array('label'=>'Department', 'url'=>array('/department/admin'), 'visible'=>!Yii::app()->user->isGuest && Yii::app()->user->is_admin == true),
-					array('label'=>'Users', 'url'=>array('/users/admin'), 'visible'=>!Yii::app()->user->isGuest && Yii::app()->user->is_admin == true),
 					array('label'=>'Employees', 'url'=>array('/employee/admin'), 'visible'=>!Yii::app()->user->isGuest && Yii::app()->user->is_admin == true),
+					array('label'=>'Users', 'url'=>array('/users/admin'), 'visible'=>!Yii::app()->user->isGuest && Yii::app()->user->is_admin == true),
 					array('label'=>'Categories', 'url'=>array('/taskcategory/admin'), 'visible'=>!Yii::app()->user->isGuest && Yii::app()->user->is_admin == true),
 					array('label'=>'Tasks', 'url'=>array('/task/admin'), 'visible'=>!Yii::app()->user->isGuest && Yii::app()->user->is_admin == true),
 				),
